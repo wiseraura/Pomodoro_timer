@@ -73,7 +73,8 @@ class Pomodoro(QMainWindow):
             else:
                 # start a work timer
                 self.time_remaining = QTime(0, 25, 0)
-                self.timer_label.setText("25:00")
+                self.timer_label.setText("Work")
+
                 self.state = "work"
 
             self.start_button.setEnabled(False)
