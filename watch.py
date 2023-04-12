@@ -20,11 +20,9 @@ class Pomodoro(QMainWindow):
         layout = QVBoxLayout()
 
         # add the watch label and timer label to the layout
-
         layout.addWidget(self.timer_label)
         layout.addWidget(self.start_button)
         layout.addWidget(self.reset_button)
-
 
         # create a widget to hold the layout
         widget = QWidget()
@@ -64,10 +62,12 @@ class Pomodoro(QMainWindow):
             self.timer_label.setText("Break")
             self.breakTimer.timeout.connect(self.start_break)
             self.start_button.setEnabled(False)
+            self.breakTimer.start(1000)
 
     def start_break(self):
         self.breakTimer.stop()
-        self.time=QTime(0, 5, 0)
+        self.time_remaining = QTime(0, 5, 0)
+        self.timer_label.setText(self.time_remaining.toString("mm:ss"))
         self.timer.start(1000)
 
 if __name__ == '__main__':
