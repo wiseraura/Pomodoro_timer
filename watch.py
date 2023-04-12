@@ -39,6 +39,9 @@ class Pomodoro(QMainWindow):
         # set the initial time
         self.time_remaining = QTime(0, 25, 0)
 
+        # set the initial state to "work"
+        self.state = "work"
+
     def start_timer(self):
         self.timer.start()
 
@@ -47,6 +50,9 @@ class Pomodoro(QMainWindow):
         self.time_remaining = QTime(0, 25, 0)
         self.timer_label.setText(self.time_remaining.toString("mm:ss"))
         self.start_button.setEnabled(True)
+
+        # set the initial state to "work"
+        self.state = "work"
 
     def update_timer(self):
         # decrement the time remaining by 1 second
@@ -58,11 +64,20 @@ class Pomodoro(QMainWindow):
         # if the timer has reached 0, stop the timer and show a message
         if self.time_remaining == QTime(0, 0, 0):
             self.timer.stop()
-            self.breakTimer = QTimer(self)
-            self.timer_label.setText("Break")
-            self.breakTimer.timeout.connect(self.start_break)
+
+            if self.state == "work":
+                # start a break timer
+                self.time_remaining = QTime(0, 5, 0)
+                self.timer_label.setText("Break")
+                self.state = "break"
+            else:
+                # start a work timer
+                self.time_remaining = QTime(0, 25, 0)
+                self.timer_label.setText("25:00")
+                self.state = "work"
+
             self.start_button.setEnabled(False)
-            self.breakTimer.start(1000)
+            self.timer.start()
 
     def start_break(self):
         self.breakTimer.stop()
