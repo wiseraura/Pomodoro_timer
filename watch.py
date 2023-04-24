@@ -12,8 +12,10 @@ class Pomodoro(QMainWindow):
         self.timer_label.setObjectName("timerLabel")
         self.timer_label.setAlignment(Qt.AlignCenter)
         self.start_button = QPushButton("Start")
+        self.pause_button = QPushButton("Pause")
         self.reset_button = QPushButton("Reset")
         self.start_button.clicked.connect(self.start_timer)
+        self.pause_button.clicked.connect(self.pause_timer)
         self.reset_button.clicked.connect(self.reset_timer)
 
         # create a vertical layout and add the label and buttons to it
@@ -22,6 +24,7 @@ class Pomodoro(QMainWindow):
         # add the watch label and timer label to the layout
         layout.addWidget(self.timer_label)
         layout.addWidget(self.start_button)
+        layout.addWidget(self.pause_button)
         layout.addWidget(self.reset_button)
 
         # create a widget to hold the layout
@@ -42,14 +45,25 @@ class Pomodoro(QMainWindow):
         # set the initial state to "work"
         self.state = "work"
 
+        # disable the Pause button at startup
+        self.pause_button.setEnabled(False)
+
     def start_timer(self):
         self.timer.start()
+        self.start_button.setEnabled(False)
+        self.pause_button.setEnabled(True)
+
+    def pause_timer(self):
+        self.timer.stop()
+        self.pause_button.setEnabled(False)
+        self.start_button.setEnabled(True)
 
     def reset_timer(self):
         self.timer.stop()
         self.time_remaining = QTime(0, 25, 0)
         self.timer_label.setText(self.time_remaining.toString("mm:ss"))
         self.start_button.setEnabled(True)
+        self.pause_button.setEnabled(False)
 
         # set the initial state to "work"
         self.state = "work"
@@ -60,14 +74,14 @@ class Pomodoro(QMainWindow):
 
         # update the timer label with the new time
         self.timer_label.setText(self.time_remaining.toString("mm:ss"))
-
+        count = 0
         # if the timer has reached 0, stop the timer and show a message
         if self.time_remaining == QTime(0, 0, 0):
             self.timer.stop()
 
             if self.state == "work":
                 # start a break timer
-                self.time_remaining = QTime(0, 5, 0)
+                self.time_remaining = QTime(0, 20, 0) if (count % 4 == 0) else QTime(0, 5, 0)
                 self.timer_label.setText("Break")
                 self.state = "break"
             else:
@@ -75,6 +89,7 @@ class Pomodoro(QMainWindow):
                 self.time_remaining = QTime(0, 25, 0)
                 self.timer_label.setText("25:00")
                 self.state = "work"
+                count += 1
 
             self.start_button.setEnabled(False)
             self.timer.start()
